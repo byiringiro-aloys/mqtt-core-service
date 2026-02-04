@@ -51,9 +51,7 @@ export class StorageManager extends EventEmitter {
       }
       
       this.emit('initialized');
-      console.log(`📦 Storage initialized: ${this.config.persistence.storageType}`);
     } catch (error) {
-      console.error('❌ Storage initialization failed:', error);
       this.emit('error', error);
       throw error;
     }
@@ -69,7 +67,7 @@ export class StorageManager extends EventEmitter {
       try {
         await this.storage.cleanup();
       } catch (error) {
-        console.error('❌ Storage cleanup failed:', error);
+        // Silent cleanup error handling
       }
     }, cleanupInterval);
   }
@@ -92,9 +90,7 @@ export class StorageManager extends EventEmitter {
     try {
       await this.storage.disconnect();
       this.emit('shutdown');
-      console.log('📦 Storage shutdown completed');
     } catch (error) {
-      console.error('❌ Storage shutdown failed:', error);
       throw error;
     }
   }

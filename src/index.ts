@@ -22,7 +22,6 @@ function loadConfig(): BrokerConfig {
   
   if (fs.existsSync(defaultConfigPath)) {
     config = JSON.parse(fs.readFileSync(defaultConfigPath, 'utf8'));
-    console.log('📋 Loaded default configuration');
   }
   
   // Load environment-specific config
@@ -30,7 +29,6 @@ function loadConfig(): BrokerConfig {
   if (fs.existsSync(envConfigPath)) {
     const envConfig = JSON.parse(fs.readFileSync(envConfigPath, 'utf8'));
     config = { ...config, ...envConfig };
-    console.log(`📋 Loaded ${env} configuration`);
   }
   
   return config as BrokerConfig;
@@ -69,7 +67,6 @@ async function startBroker(config: Partial<BrokerConfig> = {}): Promise<{ broker
   try {
     brokerConfig = loadConfig();
   } catch (error) {
-    console.warn('⚠️ Failed to load config files, using fallback configuration');
     brokerConfig = fallbackConfig;
   }
   
@@ -84,36 +81,27 @@ async function startBroker(config: Partial<BrokerConfig> = {}): Promise<{ broker
   };
 
   const broker = new MQTTBroker(brokerConfig);
-  const webServer = new WebServer(broker, 8080);
+  
+  // Use PORT environment variable for web dashboard (Render requirement)
+  const webPort = parseInt(process.env.PORT || '8080');
+  const webServer = new WebServer(broker, webPort);
 
   // Setup event listeners
   broker.on('brokerStarted', () => {
-    console.log(`🚀 MQTT Broker started on ${brokerConfig.server.host}:${brokerConfig.server.port}`);
+    // Server started silently
   });
 
   webServer.start().then(() => {
-    console.log('🌐 Web Dashboard started on http://localhost:8080');
+    // Web dashboard started silently
   });
 
   broker.on('brokerStopped', () => {
-    console.log('🛑 MQTT Broker stopped');
+    // Server stopped silently
   });
 
-  broker.on('clientConnected', ({ clientId, cleanSession, keepAlive }) => {
-    console.log(`Client connected: ${clientId} (clean: ${cleanSession}, keepAlive: ${keepAlive}s)`);
-  });
-
-  broker.on('clientDisconnected', ({ clientId, reason }) => {
-    console.log(`Client disconnected: ${clientId} (${reason})`);
-  });
-
-  broker.on('messagePublished', ({ clientId, topic, qos, retain, subscriberCount }) => {
-    console.log(`Message published: ${clientId} -> ${topic} (QoS ${qos}, retain: ${retain}, subscribers: ${subscriberCount})`);
-  });
-
-  broker.on('clientSubscribed', ({ clientId, subscriptions }) => {
-    console.log(`Client subscribed: ${clientId} -> ${subscriptions.map((s: any) => s.topicFilter).join(', ')}`);
-  });
+  // Remove client connection/disconnection logs
+  // Remove message published logs
+  // Remove subscription logs
 
   broker.on('error', (error) => {
     console.error('Broker error:', error);
@@ -130,14 +118,11 @@ async function startBroker(config: Partial<BrokerConfig> = {}): Promise<{ broker
  */
 function setupGracefulShutdown(broker: MQTTBroker, webServer: WebServer): void {
   const shutdown = async (signal: string) => {
-    console.log(`Received ${signal}, shutting down gracefully...`);
-    
     try {
       await Promise.all([
         broker.stop(),
         webServer.stop()
       ]);
-      console.log('✅ Services stopped successfully');
       process.exit(0);
     } catch (error) {
       console.error('❌ Error during shutdown:', error);
@@ -155,18 +140,9 @@ if (require.main === module) {
   startBroker()
     .then(({ broker, webServer }) => {
       setupGracefulShutdown(broker, webServer);
-      
-      // Print startup information
-      const stats = broker.getStats();
-      console.log('📊 Broker Statistics:', JSON.stringify(stats, null, 2));
-      
-      console.log('\n🎯 Access Points:');
-      console.log('📡 MQTT (TCP): mqtt://localhost:1883');
-      console.log('🔌 MQTT (WebSocket): ws://localhost:2883');
-      console.log('🌐 Web Dashboard: http://localhost:8080');
     })
     .catch((error) => {
-      console.error('💥 Failed to start services:', error);
+      console.error('� Failed to start services:', error);
       process.exit(1);
     });
 }

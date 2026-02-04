@@ -16,7 +16,6 @@ export class MemoryStorage extends EventEmitter implements IStorage {
   async connect(): Promise<void> {
     this.connected = true;
     this.emit('connected');
-    console.log('📦 Memory storage initialized');
   }
 
   async disconnect(): Promise<void> {
@@ -25,7 +24,6 @@ export class MemoryStorage extends EventEmitter implements IStorage {
     this.retainedMessages.clear();
     this.sessions.clear();
     this.emit('disconnected');
-    console.log('📦 Memory storage cleared');
   }
 
   isConnected(): boolean {

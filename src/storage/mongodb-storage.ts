@@ -66,9 +66,7 @@ export class MongoDBStorage extends EventEmitter {
       
       this.connected = true;
       this.emit('connected');
-      console.log('📦 MongoDB storage connected successfully');
     } catch (error) {
-      console.error('❌ MongoDB connection failed:', error);
       this.emit('error', error);
       throw error;
     }
@@ -92,10 +90,8 @@ export class MongoDBStorage extends EventEmitter {
       // Retained messages indexes
       await this.retainedCollection.createIndex({ topic: 1 }, { unique: true });
       await this.retainedCollection.createIndex({ timestamp: 1 });
-      
-      console.log('📊 MongoDB indexes created successfully');
     } catch (error) {
-      console.error('⚠️ Failed to create indexes:', error);
+      // Silent error handling for index creation
     }
   }
 
@@ -123,7 +119,6 @@ export class MongoDBStorage extends EventEmitter {
       await this.messagesCollection.insertOne(storedMessage);
       this.emit('messageStored', message);
     } catch (error) {
-      console.error('❌ Failed to store message:', error);
       this.emit('error', error);
       throw error;
     }
@@ -151,7 +146,6 @@ export class MongoDBStorage extends EventEmitter {
       );
       this.emit('retainedMessageStored', topic, message);
     } catch (error) {
-      console.error('❌ Failed to store retained message:', error);
       this.emit('error', error);
       throw error;
     }
@@ -169,7 +163,6 @@ export class MongoDBStorage extends EventEmitter {
       const result = await this.retainedCollection.findOne({ topic });
       return result ? result.message : null;
     } catch (error) {
-      console.error('❌ Failed to get retained message:', error);
       throw error;
     }
   }
@@ -191,7 +184,6 @@ export class MongoDBStorage extends EventEmitter {
         message: result.message
       }));
     } catch (error) {
-      console.error('❌ Failed to get retained messages:', error);
       throw error;
     }
   }
@@ -208,7 +200,6 @@ export class MongoDBStorage extends EventEmitter {
       await this.retainedCollection.deleteOne({ topic });
       this.emit('retainedMessageDeleted', topic);
     } catch (error) {
-      console.error('❌ Failed to delete retained message:', error);
       throw error;
     }
   }
@@ -236,7 +227,6 @@ export class MongoDBStorage extends EventEmitter {
       );
       this.emit('sessionStored', clientId, session);
     } catch (error) {
-      console.error('❌ Failed to store session:', error);
       this.emit('error', error);
       throw error;
     }
@@ -254,7 +244,6 @@ export class MongoDBStorage extends EventEmitter {
       const result = await this.sessionsCollection.findOne({ clientId });
       return result ? result.sessionData : null;
     } catch (error) {
-      console.error('❌ Failed to get session:', error);
       throw error;
     }
   }
@@ -271,7 +260,6 @@ export class MongoDBStorage extends EventEmitter {
       await this.sessionsCollection.deleteOne({ clientId });
       this.emit('sessionDeleted', clientId);
     } catch (error) {
-      console.error('❌ Failed to delete session:', error);
       throw error;
     }
   }
@@ -302,7 +290,6 @@ export class MongoDBStorage extends EventEmitter {
         publisherId: result.publisherId
       }));
     } catch (error) {
-      console.error('❌ Failed to get messages:', error);
       throw error;
     }
   }
@@ -335,7 +322,6 @@ export class MongoDBStorage extends EventEmitter {
         storageSize: dbStats.dataSize || 0
       };
     } catch (error) {
-      console.error('❌ Failed to get storage stats:', error);
       throw error;
     }
   }
@@ -358,10 +344,10 @@ export class MongoDBStorage extends EventEmitter {
       ]);
 
       if (messagesDeleted.deletedCount > 0 || sessionsDeleted.deletedCount > 0) {
-        console.log(`🧹 Cleanup completed: ${messagesDeleted.deletedCount} messages, ${sessionsDeleted.deletedCount} sessions removed`);
+        // Silent cleanup completion
       }
     } catch (error) {
-      console.error('❌ Cleanup failed:', error);
+      // Silent cleanup error handling
     }
   }
 
@@ -383,7 +369,6 @@ export class MongoDBStorage extends EventEmitter {
       await this.client.close();
       this.connected = false;
       this.emit('disconnected');
-      console.log('📦 MongoDB storage disconnected');
     }
   }
 

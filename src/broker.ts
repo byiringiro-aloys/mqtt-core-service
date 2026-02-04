@@ -320,7 +320,7 @@ export class MQTTBroker extends EventEmitter {
             this.sessionManager.restoreSession(connectPacket.clientId, session);
           }
         } catch (storageError) {
-          console.error('❌ Failed to restore session from storage:', storageError);
+          // Silent error handling for session restoration
         }
       }
       
@@ -353,7 +353,7 @@ export class MQTTBroker extends EventEmitter {
           const ttl = 3600; // 1 hour default session expiry
           await this.storageManager.getStorage().storeSession(connectPacket.clientId, session, ttl);
         } catch (storageError) {
-          console.error('❌ Failed to store session:', storageError);
+          // Silent error handling for session storage
         }
       }
 
@@ -431,7 +431,7 @@ export class MQTTBroker extends EventEmitter {
             }
           }
         } catch (storageError) {
-          console.error('❌ Failed to store message:', storageError);
+          // Silent error handling for message storage
           // Continue processing even if storage fails
         }
       }

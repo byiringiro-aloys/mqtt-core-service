@@ -841,7 +841,6 @@ export class WebServer {
   start(): Promise<void> {
     return new Promise((resolve) => {
       this.server.listen(this.port, () => {
-        console.log(`🌐 Web Dashboard available at http://localhost:${this.port}`);
         resolve();
       });
     });
