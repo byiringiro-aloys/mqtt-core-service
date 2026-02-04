@@ -17,7 +17,6 @@ class MemoryStorage extends events_1.EventEmitter {
     async connect() {
         this.connected = true;
         this.emit('connected');
-        console.log('📦 Memory storage initialized');
     }
     async disconnect() {
         this.connected = false;
@@ -25,7 +24,6 @@ class MemoryStorage extends events_1.EventEmitter {
         this.retainedMessages.clear();
         this.sessions.clear();
         this.emit('disconnected');
-        console.log('📦 Memory storage cleared');
     }
     isConnected() {
         return this.connected;

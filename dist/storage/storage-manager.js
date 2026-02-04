@@ -42,10 +42,8 @@ class StorageManager extends events_1.EventEmitter {
                 this.setupCleanup();
             }
             this.emit('initialized');
-            console.log(`📦 Storage initialized: ${this.config.persistence.storageType}`);
         }
         catch (error) {
-            console.error('❌ Storage initialization failed:', error);
             this.emit('error', error);
             throw error;
         }
@@ -60,7 +58,7 @@ class StorageManager extends events_1.EventEmitter {
                 await this.storage.cleanup();
             }
             catch (error) {
-                console.error('❌ Storage cleanup failed:', error);
+                // Silent cleanup error handling
             }
         }, cleanupInterval);
     }
@@ -80,10 +78,8 @@ class StorageManager extends events_1.EventEmitter {
         try {
             await this.storage.disconnect();
             this.emit('shutdown');
-            console.log('📦 Storage shutdown completed');
         }
         catch (error) {
-            console.error('❌ Storage shutdown failed:', error);
             throw error;
         }
     }

@@ -11,6 +11,7 @@ export declare class WebServer {
     private serveDashboard;
     private serveStats;
     private serveConfig;
+    private serveHealth;
     private serve404;
     private serve500;
     private generateDashboardHTML;

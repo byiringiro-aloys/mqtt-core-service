@@ -29,13 +29,14 @@ class MQTTBroker extends events_1.EventEmitter {
         this.qosHandler = new qos_handler_1.QoSHandler();
         this.tcpManager = new tcp_manager_1.TCPConnectionManager(config);
         this.storageManager = new storage_manager_1.StorageManager(config);
-        // Initialize WebSocket manager if needed
-        if (config.server.port) {
+        // Initialize WebSocket manager only in development
+        // Disable WebSocket on Render to avoid port conflicts
+        if (config.server.port && !process.env.RENDER) {
             this.wsManager = new websocket_manager_1.WebSocketConnectionManager({
                 ...config,
                 server: {
                     ...config.server,
-                    port: config.server.port + 1000 // Use port 2883 for WebSocket
+                    port: 2883 // Fixed WebSocket port
                 }
             });
         }
@@ -261,7 +262,7 @@ class MQTTBroker extends events_1.EventEmitter {
                     }
                 }
                 catch (storageError) {
-                    console.error('❌ Failed to restore session from storage:', storageError);
+                    // Silent error handling for session restoration
                 }
             }
             // Create new session if none exists or clean session requested
@@ -290,7 +291,7 @@ class MQTTBroker extends events_1.EventEmitter {
                     await this.storageManager.getStorage().storeSession(connectPacket.clientId, session, ttl);
                 }
                 catch (storageError) {
-                    console.error('❌ Failed to store session:', storageError);
+                    // Silent error handling for session storage
                 }
             }
             // Send CONNACK
@@ -354,7 +355,7 @@ class MQTTBroker extends events_1.EventEmitter {
                     }
                 }
                 catch (storageError) {
-                    console.error('❌ Failed to store message:', storageError);
+                    // Silent error handling for message storage
                     // Continue processing even if storage fails
                 }
             }

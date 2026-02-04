@@ -52,13 +52,14 @@ export class MQTTBroker extends EventEmitter {
     this.tcpManager = new TCPConnectionManager(config);
     this.storageManager = new StorageManager(config);
     
-    // Initialize WebSocket manager if needed
-    if (config.server.port) {
+    // Initialize WebSocket manager only in development
+    // Disable WebSocket on Render to avoid port conflicts
+    if (config.server.port && !process.env.RENDER) {
       this.wsManager = new WebSocketConnectionManager({
         ...config,
         server: {
           ...config.server,
-          port: config.server.port + 1000 // Use port 2883 for WebSocket
+          port: 2883 // Fixed WebSocket port
         }
       });
     }

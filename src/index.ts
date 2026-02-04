@@ -140,9 +140,10 @@ if (require.main === module) {
   startBroker()
     .then(({ broker, webServer }) => {
       setupGracefulShutdown(broker, webServer);
+      // Silent startup - v2.0.0
     })
     .catch((error) => {
-      console.error('� Failed to start services:', error);
+      console.error('Failed to start services:', error);
       process.exit(1);
     });
 }

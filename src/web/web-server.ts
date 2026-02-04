@@ -19,6 +19,13 @@ export class WebServer {
   private handleRequest(req: http.IncomingMessage, res: http.ServerResponse): void {
     const url = req.url || '/';
     
+    // Handle WebSocket upgrade requests by rejecting them
+    if (req.headers.upgrade === 'websocket') {
+      res.writeHead(426, { 'Content-Type': 'text/plain' });
+      res.end('WebSocket not supported on this endpoint. Use MQTT TCP on port 1883.');
+      return;
+    }
+    
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -37,6 +44,8 @@ export class WebServer {
         this.serveStats(res);
       } else if (url === '/api/config') {
         this.serveConfig(res);
+      } else if (url === '/health') {
+        this.serveHealth(res);
       } else {
         this.serve404(res);
       }
@@ -91,6 +100,18 @@ export class WebServer {
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(safeConfig, null, 2));
+  }
+
+  private serveHealth(res: http.ServerResponse): void {
+    const health = {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: '1.0.0'
+    };
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(health, null, 2));
   }
 
   private serve404(res: http.ServerResponse): void {

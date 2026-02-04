@@ -30,10 +30,8 @@ class MongoDBStorage extends events_1.EventEmitter {
             await this.createIndexes();
             this.connected = true;
             this.emit('connected');
-            console.log('📦 MongoDB storage connected successfully');
         }
         catch (error) {
-            console.error('❌ MongoDB connection failed:', error);
             this.emit('error', error);
             throw error;
         }
@@ -54,10 +52,9 @@ class MongoDBStorage extends events_1.EventEmitter {
             // Retained messages indexes
             await this.retainedCollection.createIndex({ topic: 1 }, { unique: true });
             await this.retainedCollection.createIndex({ timestamp: 1 });
-            console.log('📊 MongoDB indexes created successfully');
         }
         catch (error) {
-            console.error('⚠️ Failed to create indexes:', error);
+            // Silent error handling for index creation
         }
     }
     /**
@@ -83,7 +80,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             this.emit('messageStored', message);
         }
         catch (error) {
-            console.error('❌ Failed to store message:', error);
             this.emit('error', error);
             throw error;
         }
@@ -105,7 +101,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             this.emit('retainedMessageStored', topic, message);
         }
         catch (error) {
-            console.error('❌ Failed to store retained message:', error);
             this.emit('error', error);
             throw error;
         }
@@ -122,7 +117,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             return result ? result.message : null;
         }
         catch (error) {
-            console.error('❌ Failed to get retained message:', error);
             throw error;
         }
     }
@@ -142,7 +136,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             }));
         }
         catch (error) {
-            console.error('❌ Failed to get retained messages:', error);
             throw error;
         }
     }
@@ -158,7 +151,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             this.emit('retainedMessageDeleted', topic);
         }
         catch (error) {
-            console.error('❌ Failed to delete retained message:', error);
             throw error;
         }
     }
@@ -180,7 +172,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             this.emit('sessionStored', clientId, session);
         }
         catch (error) {
-            console.error('❌ Failed to store session:', error);
             this.emit('error', error);
             throw error;
         }
@@ -197,7 +188,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             return result ? result.sessionData : null;
         }
         catch (error) {
-            console.error('❌ Failed to get session:', error);
             throw error;
         }
     }
@@ -213,7 +203,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             this.emit('sessionDeleted', clientId);
         }
         catch (error) {
-            console.error('❌ Failed to delete session:', error);
             throw error;
         }
     }
@@ -242,7 +231,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             }));
         }
         catch (error) {
-            console.error('❌ Failed to get messages:', error);
             throw error;
         }
     }
@@ -268,7 +256,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             };
         }
         catch (error) {
-            console.error('❌ Failed to get storage stats:', error);
             throw error;
         }
     }
@@ -287,11 +274,11 @@ class MongoDBStorage extends events_1.EventEmitter {
                 this.sessionsCollection.deleteMany({ expiresAt: { $lt: now } })
             ]);
             if (messagesDeleted.deletedCount > 0 || sessionsDeleted.deletedCount > 0) {
-                console.log(`🧹 Cleanup completed: ${messagesDeleted.deletedCount} messages, ${sessionsDeleted.deletedCount} sessions removed`);
+                // Silent cleanup completion
             }
         }
         catch (error) {
-            console.error('❌ Cleanup failed:', error);
+            // Silent cleanup error handling
         }
     }
     /**
@@ -311,7 +298,6 @@ class MongoDBStorage extends events_1.EventEmitter {
             await this.client.close();
             this.connected = false;
             this.emit('disconnected');
-            console.log('📦 MongoDB storage disconnected');
         }
     }
     /**

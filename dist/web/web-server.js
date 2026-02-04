@@ -46,6 +46,12 @@ class WebServer {
     }
     handleRequest(req, res) {
         const url = req.url || '/';
+        // Handle WebSocket upgrade requests by rejecting them
+        if (req.headers.upgrade === 'websocket') {
+            res.writeHead(426, { 'Content-Type': 'text/plain' });
+            res.end('WebSocket not supported on this endpoint. Use MQTT TCP on port 1883.');
+            return;
+        }
         // Set CORS headers
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -64,6 +70,9 @@ class WebServer {
             }
             else if (url === '/api/config') {
                 this.serveConfig(res);
+            }
+            else if (url === '/health') {
+                this.serveHealth(res);
             }
             else {
                 this.serve404(res);
@@ -114,6 +123,16 @@ class WebServer {
         };
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(safeConfig, null, 2));
+    }
+    serveHealth(res) {
+        const health = {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            version: '1.0.0'
+        };
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(health, null, 2));
     }
     serve404(res) {
         res.writeHead(404, { 'Content-Type': 'text/html' });
@@ -860,7 +879,6 @@ class WebServer {
     start() {
         return new Promise((resolve) => {
             this.server.listen(this.port, () => {
-                console.log(`🌐 Web Dashboard available at http://localhost:${this.port}`);
                 resolve();
             });
         });

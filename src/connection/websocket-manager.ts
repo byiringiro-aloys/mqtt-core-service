@@ -17,9 +17,10 @@ export class WebSocketConnectionManager extends EventEmitter {
     super();
     this.config = config;
     
+    // Only create WebSocket server if not sharing HTTP server
+    // For Render deployment, we'll use a separate port
     this.server = new WebSocket.Server({
-      port: httpServer ? undefined : config.server.port + 1, // Use different port if no HTTP server
-      server: httpServer,
+      port: config.server.port, // Use the configured WebSocket port
       perMessageDeflate: false // Disable compression for MQTT
     });
 
