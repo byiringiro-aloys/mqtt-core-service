@@ -1,0 +1,72 @@
+{
+  "server": {
+    "port": 1883,
+    "host": "localhost",
+    "maxConnections": 100,
+    "keepAliveTimeout": 60,
+    "enableWebSocket": true,
+    "webSocketPort": 8083
+  },
+  "security": {
+    "enableTLS": false,
+    "requireAuth": false,
+    "enableClientCerts": false
+  },
+  "auth": {
+    "type": "none",
+    "allowAnonymous": true,
+    "defaultACL": [
+      {
+        "topic": "#",
+        "operations": ["read", "write"],
+        "priority": 0
+      }
+    ]
+  },
+  "persistence": {
+    "enabled": true,
+    "storageType": "database",
+    "retainedMessageLimit": 1000,
+    "sessionExpiryInterval": 300,
+    "messageQueueLimit": 100,
+    "config": {
+      "database": "mqtt-broker-dev",
+      "cleanupInterval": 180000
+    }
+  },
+  "performance": {
+    "messageQueueLimit": 100,
+    "inflightWindowSize": 50,
+    "workerThreads": 2,
+    "batchSize": 50,
+    "connectionTimeout": 10000,
+    "ackTimeout": 10000,
+    "retryInterval": 2000,
+    "maxRetries": 2
+  },
+  "monitoring": {
+    "enabled": true,
+    "port": 9090,
+    "path": "/metrics",
+    "interval": 1000,
+    "enableHealthCheck": true,
+    "healthCheckPort": 8080,
+    "healthCheckPath": "/health"
+  },
+  "logging": {
+    "level": "debug",
+    "format": "text",
+    "output": "console"
+  },
+  "cluster": {
+    "enabled": false
+  },
+  "iot": {
+    "enableMQTTSN": false,
+    "enableCompression": false,
+    "enablePresenceTracking": true,
+    "deviceOfflineTimeout": 60,
+    "enableBulkOperations": false,
+    "retentionPolicies": []
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "server": {
+    "port": 1883,
+    "host": "0.0.0.0",
+    "maxConnections": 1000,
+    "keepAliveTimeout": 60000
+  },
+  "security": {
+    "enableTLS": false,
+    "requireAuth": false,
+    "certFile": null,
+    "keyFile": null
+  },
+  "persistence": {
+    "enabled": true,
+    "storageType": "database",
+    "retainedMessageLimit": 10000,
+    "config": {
+      "database": "mqtt-broker",
+      "cleanupInterval": 300000
+    }
+  },
+  "performance": {
+    "messageQueueLimit": 1000,
+    "inflightWindowSize": 100,
+    "workerThreads": 1
+  }
+}
